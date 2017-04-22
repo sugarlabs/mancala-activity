@@ -25,6 +25,20 @@ ver='4.8'
 # pygame.mouse.set_visible(False) moved to g.py
 ver='4.9'
 # buttons.py - redraw pointer when button down
+ver='21'
+ver='22'
+# flush_queue() doesn't use gtk on non-XO
+
+UP=(264,273)
+DOWN=(258,274)
+LEFT=(260,276)
+RIGHT=(262,275)
+CROSS=(259,120)
+CIRCLE=(265,111)
+SQUARE=(263,32)
+TICK=(257,13)
+NUMBERS={pygame.K_1:1,pygame.K_2:2,pygame.K_3:3,pygame.K_4:4,\
+           pygame.K_5:5,pygame.K_6:6}
 
 def init(): # called by run()
     random.seed()

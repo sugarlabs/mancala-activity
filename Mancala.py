@@ -9,8 +9,12 @@
     (at your option) any later version.
 
 """
-import g,pygame,utils,gtk,sys,buttons,load_save
+import g,pygame,utils,sys,buttons,load_save
 import manc
+try:
+    import gtk
+except:
+    pass
 
 class Mancala:
 
@@ -51,20 +55,21 @@ class Mancala:
     def do_button(self,bu):
         if bu=='new': self.manc.setup()
 
-    def do_key(self,key0):
-        if key0==263 or key0==32: self.do_button('new'); return
+    def do_key(self,key):
+        if key in g.SQUARE: self.do_button('new'); return
+        if key==pygame.K_v: g.version_display=not g.version_display; return
         if g.state==1:
-            for key in range(49,55):
-                if key0==key:
-                    self.manc.do_click(key-48); self.manc.set_mouse();return
-            if key0 in (259,pygame.K_x): # cross,x
+            if key in g.NUMBERS:
+                n=g.NUMBERS[key]
+                self.manc.do_click(n); self.manc.set_mouse();return
+            if key in g.CROSS:
                 self.manc.do_click(self.manc.dish_n); return
-            if key0==262 or key0==275: #right
+            if key in g.RIGHT:
                 self.manc.dish_n+=1
                 if self.manc.dish_n==7: self.manc.dish_n=1
                 self.manc.set_mouse()
                 return
-            if key0 in (260,276): #left
+            if key in g.LEFT:
                 self.manc.dish_n-=1
                 if self.manc.dish_n==0: self.manc.dish_n=6
                 self.manc.set_mouse()
@@ -73,6 +78,14 @@ class Mancala:
     def buttons_setup(self):
         buttons.Button('new',(g.sx(30),g.sy(2)))
 
+    def flush_queue(self):
+        flushing=True
+        while flushing:
+            flushing=False
+            if self.journal:
+                while gtk.events_pending(): gtk.main_iteration()
+            for event in pygame.event.get(): flushing=True
+
     def run(self):
         g.init()
         if not self.journal: utils.load()
@@ -80,11 +93,14 @@ class Mancala:
         self.manc.setup()
         load_save.retrieve()
         self.buttons_setup()
+        if self.canvas<>None: self.canvas.grab_focus()
+        ctrl=False
+        pygame.key.set_repeat(600,120); key_ms=pygame.time.get_ticks()
         going=True
         while going:
-            # Pump GTK messages.
-            while gtk.events_pending():
-                gtk.main_iteration()
+            if self.journal:
+                # Pump GTK messages.
+                while gtk.events_pending(): gtk.main_iteration()
 
             # Pump PyGame messages.
             for event in pygame.event.get():
@@ -98,21 +114,32 @@ class Mancala:
                     if self.canvas<>None: self.canvas.grab_focus()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     g.redraw=True
-                    if event.button==2: # centre button
-                        if not self.journal:
-                            g.version_display=not g.version_display
                     if event.button==1:
                         bu=buttons.check()
                         if bu!='': self.do_button(bu)
                         else: self.do_click()
+                        self.flush_queue()
                 elif event.type == pygame.KEYDOWN:
-                    self.do_key(event.key); g.redraw=True
+                    # throttle keyboard repeat
+                    if pygame.time.get_ticks()-key_ms>110:
+                        key_ms=pygame.time.get_ticks()
+                        if ctrl:
+                            if event.key==pygame.K_q:
+                                if not self.journal: utils.save()
+                                going=False; break
+                            else:
+                                ctrl=False
+                        if event.key in (pygame.K_LCTRL,pygame.K_RCTRL):
+                            ctrl=True; break
+                        self.do_key(event.key); g.redraw=True
+                        self.flush_queue()
+                elif event.type == pygame.KEYUP:
+                    ctrl=False
             if not going: break
             self.update()
             if g.redraw:
                 self.display()
-                if not self.journal: # not on XO
-                    if g.version_display: utils.version_display()
+                if g.version_display: utils.version_display()
                 g.screen.blit(g.pointer,g.pos)
                 pygame.display.flip()
                 g.redraw=False
@@ -120,7 +147,7 @@ class Mancala:
 
 if __name__=="__main__":
     pygame.init()
-    pygame.display.set_mode((800,600))
+    pygame.display.set_mode((1024,768),pygame.FULLSCREEN)
     game=Mancala()
     game.journal=False
     game.run()

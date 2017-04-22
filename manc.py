@@ -106,7 +106,7 @@ class Manc:
     def set_mouse(self):
         x,y=self.dishes[self.dish_n].cxy
         y+=self.h4
-        pygame.mouse.set_pos((x,y))
+        pygame.mouse.set_pos((x,y)); g.pos=(x,y)
         
     def check_mouse(self):
         n=self.which()

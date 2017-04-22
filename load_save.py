@@ -17,7 +17,7 @@ def save(f):
 
 def retrieve():
     global loaded
-    if len(loaded)==2:
+    if len(loaded)>1:
         g.player=int(loaded[0])
         g.wizard=int(loaded[1])
 
