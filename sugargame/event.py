@@ -253,9 +253,6 @@ class Translator(object):
                 pass
             elif str(e) == 'Event queue full':
                 logging.error("Event queue full!")
-                import sys, traceback
-                print traceback.print_stack(file=sys.stderr)
-                exit(1)
                 pass
             else:
                 raise e

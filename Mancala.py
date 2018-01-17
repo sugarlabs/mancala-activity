@@ -91,7 +91,14 @@ class Mancala:
             for event in pygame.event.get(): flushing=True
 
     def run(self):
-        logging.error('Mancala.run')
+        # g.init and self.manc require that we know the display size first
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                return
+            elif event.type == pygame.VIDEORESIZE:
+                logging.error('Mancala.run pre-init-videoresize %r', event.size)
+                pygame.display.set_mode(event.size, pygame.RESIZABLE)
+                break
         g.init()
         if not self.journal: utils.load()
         self.manc=manc.Manc()
@@ -114,8 +121,7 @@ class Mancala:
                     if not self.journal: utils.save()
                     going=False
                 elif event.type == pygame.VIDEORESIZE:
-                    logging.error('Mancala.run videoresize')
-                    pygame.display.set_mode(event.size, pygame.RESIZABLE)
+                    logging.error('Mancala.run videoresize unsupported')
                 elif event.type == pygame.MOUSEMOTION:
                     g.pos=event.pos
                     self.manc.check_mouse()
