@@ -1,6 +1,6 @@
 [Activity]
 name = Mancala
-activity_version = 22
+activity_version = 23
 host_version = 1
 bundle_id = mulawa.Mancala
 license = GPLv3+
