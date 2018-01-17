@@ -9,6 +9,7 @@
     (at your option) any later version.
 
 """
+import logging
 import g,pygame,utils,sys,buttons,load_save
 import manc
 try:
@@ -90,6 +91,7 @@ class Mancala:
             for event in pygame.event.get(): flushing=True
 
     def run(self):
+        logging.error('Mancala.run')
         g.init()
         if not self.journal: utils.load()
         self.manc=manc.Manc()
@@ -107,15 +109,20 @@ class Mancala:
 
             # Pump PyGame messages.
             for event in pygame.event.get():
-                if event.type==pygame.QUIT: # only in standalone version
+                if event.type==pygame.QUIT:
+                    logging.error('Mancala.run quit')
                     if not self.journal: utils.save()
                     going=False
+                elif event.type == pygame.VIDEORESIZE:
+                    logging.error('Mancala.run videoresize')
+                    pygame.display.set_mode(event.size, pygame.RESIZABLE)
                 elif event.type == pygame.MOUSEMOTION:
                     g.pos=event.pos
                     self.manc.check_mouse()
                     g.redraw=True
                     if self.canvas<>None: self.canvas.grab_focus()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    logging.error('Mancala.run mousebuttondown')
                     g.redraw=True
                     if event.button==1:
                         bu=buttons.check()
@@ -123,6 +130,7 @@ class Mancala:
                         else: self.do_click()
                         self.flush_queue()
                 elif event.type == pygame.KEYDOWN:
+                    logging.error('Mancala.run keydown')
                     # throttle keyboard repeat
                     if pygame.time.get_ticks()-key_ms>110:
                         key_ms=pygame.time.get_ticks()
@@ -147,6 +155,7 @@ class Mancala:
                 pygame.display.flip()
                 g.redraw=False
             g.clock.tick(40)
+        logging.error('Mancala.run terminated')
 
 if __name__=="__main__":
     pygame.init()

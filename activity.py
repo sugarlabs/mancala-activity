@@ -40,20 +40,18 @@ class PeterActivity(activity.Activity):
         stop_button.show()
         self.show_all()
 
-
         # Create the game instance.
         self.game = Mancala.Mancala()
 
         # Build the Pygame canvas.
-        self._pygamecanvas = \
-            sugargame.canvas.PygameCanvas(self)
+        self.game.canvas = self._pygamecanvas = \
+            sugargame.canvas.PygameCanvas(self,
+                main=self.game.run,
+                modules=[pygame.display, pygame.font])
+
         # Note that set_canvas implicitly calls
         # read_file when resuming from the Journal.
         self.set_canvas(self._pygamecanvas)
-        self.game.canvas=self._pygamecanvas
-
-        # Start the game running.
-        self._pygamecanvas.run_pygame(self.game.run)
 
     def read_file(self, file_path):
         try:
