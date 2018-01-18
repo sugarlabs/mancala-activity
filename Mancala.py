@@ -90,6 +90,13 @@ class Mancala:
             for event in pygame.event.get(): flushing=True
 
     def run(self):
+        # g.init and self.manc require that we know the display size first
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                return
+            elif event.type == pygame.VIDEORESIZE:
+                pygame.display.set_mode(event.size, pygame.RESIZABLE)
+                break
         g.init()
         if not self.journal: utils.load()
         self.manc=manc.Manc()
@@ -107,7 +114,7 @@ class Mancala:
 
             # Pump PyGame messages.
             for event in pygame.event.get():
-                if event.type==pygame.QUIT: # only in standalone version
+                if event.type==pygame.QUIT:
                     if not self.journal: utils.save()
                     going=False
                 elif event.type == pygame.MOUSEMOTION:
