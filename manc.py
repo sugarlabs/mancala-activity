@@ -191,7 +191,7 @@ class Manc:
 
     def move(self,n,group1,group2):
         ind=0
-        if self.anim[ind].ms<>None: ind=1
+        if self.anim[ind].ms!=None: ind=1
         # n,x,y,x2,y2,dx,dy,ms
         a=self.anim[ind]
         a.n=n
