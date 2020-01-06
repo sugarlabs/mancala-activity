@@ -6,5 +6,5 @@ bundle_id = mulawa.Mancala
 license = GPLv3+
 icon = activity
 show_launcher = yes
-exec = sugar-activity activity.PeterActivity
+exec = sugar-activity3 activity.PeterActivity
 repository = https://github.com/sugarlabs/mancala-activity.git
